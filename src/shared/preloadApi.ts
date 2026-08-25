@@ -11,6 +11,7 @@ import type {
   OllamaChatOptions,
   OllamaStatus,
   OllamaStreamChunk,
+  WeeklyActivityPoint,
   WorkoutPlan,
   WorkoutSession,
 } from './types';
@@ -58,6 +59,7 @@ export interface WellnessApi {
   };
   dashboard: {
     getStats(): Promise<DashboardStats>;
+    getWeeklyActivity(): Promise<WeeklyActivityPoint[]>;
   };
   chat: {
     getMessages(conversationId: string): Promise<ChatMessage[]>;

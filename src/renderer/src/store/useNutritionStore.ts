@@ -34,6 +34,7 @@ export const useNutritionStore = create<NutritionState>((set, get) => ({
     await window.api.nutrition.setMealCompleted(id, completato);
     set({ meals: get().meals.map((m) => (m.id === id ? { ...m, completato } : m)) });
     void useDashboardStore.getState().loadStats();
+    void useDashboardStore.getState().loadWeeklyActivity();
   },
 
   updateNote: async (id, note) => {

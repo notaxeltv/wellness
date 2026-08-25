@@ -23,6 +23,7 @@ export const IpcChannels = {
   progressDelete: 'progress:delete',
 
   dashboardGetStats: 'dashboard:get-stats',
+  dashboardGetWeeklyActivity: 'dashboard:get-weekly-activity',
 
   chatGetMessages: 'chat:get-messages',
   chatAddMessage: 'chat:add-message',

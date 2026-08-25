@@ -34,6 +34,7 @@ const api: WellnessApi = {
   },
   dashboard: {
     getStats: () => ipcRenderer.invoke(IpcChannels.dashboardGetStats),
+    getWeeklyActivity: () => ipcRenderer.invoke(IpcChannels.dashboardGetWeeklyActivity),
   },
   chat: {
     getMessages: (conversationId) => ipcRenderer.invoke(IpcChannels.chatGetMessages, conversationId),

@@ -24,7 +24,7 @@ import {
   clearConversation,
   listConversationIds,
 } from '../db/repositories/chatRepository';
-import { getDashboardStats } from '../db/repositories/dashboardRepository';
+import { getDashboardStats, getWeeklyActivity } from '../db/repositories/dashboardRepository';
 import { checkOllamaStatus, streamChat } from '../ollama/ollamaClient';
 
 const activeStreams = new Map<string, AbortController>();
@@ -81,6 +81,7 @@ export function registerIpcHandlers(): void {
 
   // --- Dashboard ---
   ipcMain.handle(IpcChannels.dashboardGetStats, () => getDashboardStats(db));
+  ipcMain.handle(IpcChannels.dashboardGetWeeklyActivity, () => getWeeklyActivity(db));
 
   // --- Chat / cronologia conversazioni ---
   ipcMain.handle(IpcChannels.chatGetMessages, (_e, conversationId: string) =>

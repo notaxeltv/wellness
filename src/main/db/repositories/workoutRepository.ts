@@ -207,6 +207,13 @@ export function countSessionsSince(db: Database.Database, isoDate: string): numb
   return row.c;
 }
 
+export function countSessionsOnDate(db: Database.Database, isoDate: string): number {
+  const row = db
+    .prepare('SELECT COUNT(*) as c FROM workout_sessions WHERE data = ? AND completata = 1')
+    .get(isoDate) as { c: number };
+  return row.c;
+}
+
 export function getWorkoutStreak(db: Database.Database): number {
   const rows = db
     .prepare('SELECT DISTINCT data FROM workout_sessions WHERE completata = 1 ORDER BY data DESC')

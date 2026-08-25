@@ -190,3 +190,11 @@ export interface DashboardStats {
   variazionePeso: number | null;
   prossimoPlanNome: string | null;
 }
+
+export interface WeeklyActivityPoint {
+  data: string; // ISO date
+  giornoLabel: string; // es. "Lun", "Mar"
+  allenamenti: number; // sessioni completate quel giorno
+  pastiCompletati: number;
+  pastiTotali: number;
+}

@@ -32,6 +32,7 @@ export const useWorkoutStore = create<WorkoutState>((set, get) => ({
     const session = await window.api.workouts.createSession(input);
     set({ sessions: [session, ...get().sessions] });
     void useDashboardStore.getState().loadStats();
+    void useDashboardStore.getState().loadWeeklyActivity();
     return session;
   },
 
@@ -39,5 +40,6 @@ export const useWorkoutStore = create<WorkoutState>((set, get) => ({
     await window.api.workouts.deleteSession(id);
     set({ sessions: get().sessions.filter((s) => s.id !== id) });
     void useDashboardStore.getState().loadStats();
+    void useDashboardStore.getState().loadWeeklyActivity();
   },
 }));

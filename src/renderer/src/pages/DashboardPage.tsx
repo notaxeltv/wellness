@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { WeeklyActivityChart } from '@/components/dashboard/WeeklyActivityChart';
 import { useDashboardStore } from '@/store/useDashboardStore';
 import { useSettingsStore } from '@/store/useSettingsStore';
 import { useNutritionStore } from '@/store/useNutritionStore';
@@ -13,6 +14,8 @@ import { useWorkoutStore } from '@/store/useWorkoutStore';
 export default function DashboardPage() {
   const stats = useDashboardStore((s) => s.stats);
   const loadStats = useDashboardStore((s) => s.loadStats);
+  const weeklyActivity = useDashboardStore((s) => s.weeklyActivity);
+  const loadWeeklyActivity = useDashboardStore((s) => s.loadWeeklyActivity);
   const settings = useSettingsStore((s) => s.settings);
   const meals = useNutritionStore((s) => s.meals);
   const loadMeals = useNutritionStore((s) => s.loadMeals);
@@ -22,6 +25,7 @@ export default function DashboardPage() {
     // Le statistiche possono cambiare in altre pagine (allenamenti, pasti), quindi le
     // ricarichiamo ogni volta che l'utente torna sulla Dashboard.
     void loadStats();
+    void loadWeeklyActivity();
     void loadMeals();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -93,6 +97,16 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Attività della settimana</CardTitle>
+          <CardDescription>Ultimi 7 giorni: allenamenti svolti e pasti completati</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <WeeklyActivityChart data={weeklyActivity} />
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-2">

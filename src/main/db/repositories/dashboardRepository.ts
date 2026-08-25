@@ -1,8 +1,10 @@
 import type Database from 'better-sqlite3';
-import type { DashboardStats } from '@shared/types';
-import { countSessionsSince, getWorkoutStreak, listWorkoutPlans } from './workoutRepository';
+import type { DashboardStats, WeeklyActivityPoint } from '@shared/types';
+import { countSessionsOnDate, countSessionsSince, getWorkoutStreak, listWorkoutPlans } from './workoutRepository';
 import { getMealCompletionStats } from './nutritionRepository';
 import { listBodyProgress } from './progressRepository';
+
+const GIORNI_LABEL = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
 
 function startOfWeekIso(): string {
   const now = new Date();
@@ -38,4 +40,27 @@ export function getDashboardStats(db: Database.Database): DashboardStats {
     variazionePeso,
     prossimoPlanNome,
   };
+}
+
+export function getWeeklyActivity(db: Database.Database): WeeklyActivityPoint[] {
+  const points: WeeklyActivityPoint[] = [];
+  const cursor = new Date();
+  cursor.setHours(0, 0, 0, 0);
+  cursor.setDate(cursor.getDate() - 6);
+
+  for (let i = 0; i < 7; i++) {
+    const iso = cursor.toISOString().slice(0, 10);
+    const allenamenti = countSessionsOnDate(db, iso);
+    const { completati, totali } = getMealCompletionStats(db, iso);
+    points.push({
+      data: iso,
+      giornoLabel: GIORNI_LABEL[cursor.getDay()],
+      allenamenti,
+      pastiCompletati: completati,
+      pastiTotali: totali,
+    });
+    cursor.setDate(cursor.getDate() + 1);
+  }
+
+  return points;
 }

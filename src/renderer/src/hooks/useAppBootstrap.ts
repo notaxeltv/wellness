@@ -16,6 +16,7 @@ export function useAppBootstrap(): void {
   const loadMeals = useNutritionStore((s) => s.loadMeals);
   const loadProgress = useProgressStore((s) => s.loadEntries);
   const loadStats = useDashboardStore((s) => s.loadStats);
+  const loadWeeklyActivity = useDashboardStore((s) => s.loadWeeklyActivity);
   const loadChat = useChatStore((s) => s.loadMessages);
 
   useEffect(() => {
@@ -24,6 +25,7 @@ export function useAppBootstrap(): void {
     void loadMeals();
     void loadProgress();
     void loadStats();
+    void loadWeeklyActivity();
     void loadChat();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
