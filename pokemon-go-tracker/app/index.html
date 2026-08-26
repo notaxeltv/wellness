@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pokémon GO Tracker</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-icon">⚡</span>
+        <div>
+          <h1>Pokémon GO</h1>
+          <p>Tracker Progressi</p>
+        </div>
+      </div>
+      <nav>
+        <button class="nav-btn active" data-tab="dashboard">Dashboard</button>
+        <button class="nav-btn" data-tab="pokedex">Pokédex</button>
+        <button class="nav-btn" data-tab="shiny">Shiny</button>
+        <button class="nav-btn" data-tab="resources">Risorse</button>
+        <button class="nav-btn" data-tab="medals">Medaglie</button>
+        <button class="nav-btn" data-tab="battles">Battaglie</button>
+        <button class="nav-btn" data-tab="legendary">Leggendari</button>
+      </nav>
+      <div class="sidebar-footer">
+        <button id="exportBtn" class="secondary-btn">Esporta backup</button>
+        <button id="importBtn" class="secondary-btn">Importa backup</button>
+        <input type="file" id="importFile" accept=".json" hidden />
+      </div>
+    </aside>
+
+    <main class="content">
+      <!-- Dashboard -->
+      <section id="tab-dashboard" class="tab active">
+        <header class="page-header">
+          <h2>Dashboard</h2>
+          <p>Panoramica dei tuoi progressi</p>
+        </header>
+
+        <div class="stats-grid">
+          <div class="stat-card highlight">
+            <span class="stat-label">Completamento Pokédex</span>
+            <span class="stat-value" id="dash-pokedex-pct">0%</span>
+            <span class="stat-sub" id="dash-pokedex-count">0 / 0</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Livello</span>
+            <span class="stat-value" id="dash-level">1</span>
+            <span class="stat-sub" id="dash-xp-progress">0% verso prossimo</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Shiny registrati</span>
+            <span class="stat-value" id="dash-shiny-count">0</span>
+            <span class="stat-sub" id="dash-shiny-unique">0 specie uniche</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Win rate Raid</span>
+            <span class="stat-value" id="dash-raid-wr">—</span>
+            <span class="stat-sub" id="dash-raid-record">0V - 0P</span>
+          </div>
+        </div>
+
+        <div class="panel-grid">
+          <div class="panel">
+            <h3>XP e Livello</h3>
+            <label>XP totale attuale
+              <input type="number" id="xp-total" min="0" placeholder="Es. 5000000" />
+            </label>
+            <div class="calc-row"><span>Livello calcolato</span><strong id="calc-level">1</strong></div>
+            <div class="calc-row"><span>XP mancanti al prossimo livello</span><strong id="calc-xp-remaining">—</strong></div>
+            <div class="progress-bar"><div id="xp-bar" class="progress-fill"></div></div>
+            <p class="hint" id="xp-bar-label">0%</p>
+          </div>
+
+          <div class="panel">
+            <h3>Buddy attuale</h3>
+            <label>Nome
+              <input type="text" id="buddy-name" placeholder="Es. Charizard" />
+            </label>
+            <label>Km percorsi
+              <input type="number" id="buddy-km" min="0" step="0.1" />
+            </label>
+            <label>Caramelle guadagnate
+              <input type="number" id="buddy-candy" min="0" />
+            </label>
+            <label>Cuori
+              <input type="number" id="buddy-hearts" min="0" />
+            </label>
+            <div class="calc-row"><span>Caramelle per km</span><strong id="buddy-ratio">—</strong></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>Progresso per generazione</h3>
+          <div class="gen-bars" id="gen-bars"></div>
+        </div>
+      </section>
+
+      <!-- Pokedex -->
+      <section id="tab-pokedex" class="tab">
+        <header class="page-header">
+          <h2>Pokédex</h2>
+          <p>Inserisci i conteggi catturati e visti per ogni generazione</p>
+        </header>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Generazione</th>
+                <th>Totale</th>
+                <th>Catturati</th>
+                <th>Visti</th>
+                <th>Mancanti</th>
+                <th>% Catturati</th>
+                <th>% Visti</th>
+              </tr>
+            </thead>
+            <tbody id="pokedex-body"></tbody>
+            <tfoot>
+              <tr class="total-row">
+                <td><strong>TOTALE</strong></td>
+                <td id="pd-total-species">0</td>
+                <td id="pd-total-caught">0</td>
+                <td id="pd-total-seen">0</td>
+                <td id="pd-total-missing">0</td>
+                <td id="pd-total-caught-pct">0%</td>
+                <td id="pd-total-seen-pct">0%</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </section>
+
+      <!-- Shiny -->
+      <section id="tab-shiny" class="tab">
+        <header class="page-header">
+          <h2>Registro Shiny</h2>
+          <p>Aggiungi ogni shiny catturato — l'IV% viene calcolato automaticamente</p>
+        </header>
+        <div class="stats-grid compact">
+          <div class="stat-card"><span class="stat-label">Totale</span><span class="stat-value" id="shiny-total">0</span></div>
+          <div class="stat-card"><span class="stat-label">IV medio</span><span class="stat-value" id="shiny-avg-iv">—</span></div>
+          <div class="stat-card"><span class="stat-label">Perfetti (100%)</span><span class="stat-value" id="shiny-perfect">0</span></div>
+        </div>
+        <button id="add-shiny-btn" class="primary-btn">+ Aggiungi shiny</button>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Pokémon</th>
+                <th>CP</th>
+                <th>Att</th>
+                <th>Dif</th>
+                <th>PS</th>
+                <th>IV %</th>
+                <th>Metodo</th>
+                <th>Note</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="shiny-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Resources -->
+      <section id="tab-resources" class="tab">
+        <header class="page-header">
+          <h2>Risorse</h2>
+          <p>Inventario e obiettivi personali</p>
+        </header>
+        <div class="resource-grid" id="resources-grid"></div>
+      </section>
+
+      <!-- Medals -->
+      <section id="tab-medals" class="tab">
+        <header class="page-header">
+          <h2>Medaglie</h2>
+          <p>Progresso e tier calcolati automaticamente</p>
+        </header>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Medaglia</th>
+                <th>Progresso</th>
+                <th>Bronzo</th>
+                <th>Argento</th>
+                <th>Oro</th>
+                <th>Platino</th>
+                <th>Tier</th>
+                <th>% prossimo</th>
+              </tr>
+            </thead>
+            <tbody id="medals-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Battles -->
+      <section id="tab-battles" class="tab">
+        <header class="page-header">
+          <h2>Battaglie</h2>
+          <p>Raid e Go Battle League</p>
+        </header>
+        <div class="panel-grid">
+          <div class="panel">
+            <h3>Raid</h3>
+            <label>Vittorie <input type="number" id="raid-wins" min="0" /></label>
+            <label>Sconfitte <input type="number" id="raid-losses" min="0" /></label>
+            <div class="calc-row"><span>Totale</span><strong id="raid-total">0</strong></div>
+            <div class="calc-row"><span>Win rate</span><strong id="raid-wr">—</strong></div>
+          </div>
+          <div class="panel">
+            <h3>Go Battle League</h3>
+            <label>Vittorie <input type="number" id="gbl-wins" min="0" /></label>
+            <label>Sconfitte <input type="number" id="gbl-losses" min="0" /></label>
+            <label>Rank attuale <input type="number" id="gbl-rank" min="1" max="24" /></label>
+            <div class="calc-row"><span>Totale</span><strong id="gbl-total">0</strong></div>
+            <div class="calc-row"><span>Win rate</span><strong id="gbl-wr">—</strong></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Legendary -->
+      <section id="tab-legendary" class="tab">
+        <header class="page-header">
+          <h2>Leggendari & Mitici</h2>
+          <p>Traccia catture, tentativi e win rate per raid</p>
+        </header>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Pokémon</th>
+                <th>Catturato</th>
+                <th>Shiny</th>
+                <th>IV %</th>
+                <th>Ultima cattura</th>
+                <th>Tentativi</th>
+                <th>Catture</th>
+                <th>Win rate</th>
+              </tr>
+            </thead>
+            <tbody id="legendary-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
